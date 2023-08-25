@@ -40,7 +40,7 @@ public class Controller {
     @PostMapping("/comments")
     @Operation(summary = "add comment ", responses = {
             @ApiResponse(responseCode = "201", description = "created"),
-            @ApiResponse(responseCode = "400", description = "Bad Request")})
+            @ApiResponse(responseCode = "400", description = "bad Request")})
     public ResponseEntity<CommentDTO> postComment(@Valid @RequestBody CommentDTO commentDTO) throws Exception {
         CommentDTO savedComment = commentService.addComment(commentDTO);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -53,7 +53,7 @@ public class Controller {
     @GetMapping("/comment/{commentId}")
     @Operation(summary = "get comment by comment Id", responses = {
             @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "204", description = "No Content")})
+            @ApiResponse(responseCode = "204", description = "no Content")})
     public ResponseEntity<CommentDTO> getCommentById(@PathVariable("commentId") String id) throws Exception {
         if(commentValidator(commentService.getCommentById(id))){
             return ResponseEntity.ok(commentService.getCommentById(id));
@@ -63,7 +63,7 @@ public class Controller {
     @PutMapping("/comment/{commentId}")
     @Operation(summary = "update comment by comment Id", responses = {
             @ApiResponse(responseCode = "202", description = "accepted"),
-            @ApiResponse(responseCode = "204", description = "No Content"),
+            @ApiResponse(responseCode = "204", description = "no Content"),
             @ApiResponse(responseCode = "400", description = "bad request")})
     public ResponseEntity<CommentDTO> updateComment(@PathVariable("commentId") String id, @Valid @RequestBody CommentDTO commentDTO) throws Exception {
         commentService.updateComment(id, commentDTO);
@@ -75,7 +75,7 @@ public class Controller {
     @DeleteMapping("/comment/{commentId}")
     @Operation(summary = "delete comment by comment Id", responses = {
             @ApiResponse(responseCode = "201", description = "accepted"),
-            @ApiResponse(responseCode = "204", description = "No Content")})
+            @ApiResponse(responseCode = "204", description = "no Content")})
     public ResponseEntity<CommentDTO> delete(@PathVariable("commentId") String id) throws Exception {
         if(commentValidator(commentService.getCommentById(id))){
             commentService.deleteComment(id);
@@ -86,7 +86,7 @@ public class Controller {
     @GetMapping("/comments/{storyId}")
     @Operation(summary = "get comment by storyId", responses = {
             @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "204", description = "No Content")})
+            @ApiResponse(responseCode = "204", description = "no Content")})
     public List<CommentDTO> getCommentsByStoryId(@PathVariable String storyId) throws Exception {
         return commentService.getCommentsByStoryId(storyId);
     }
@@ -98,14 +98,14 @@ public class Controller {
 
         Map<String,String> map = new HashMap<>();
         map.put("error type", httpStatus.getReasonPhrase());
-        map.put("code", "409");
+        map.put("code", httpStatus.name());
 
         return new ResponseEntity<>(map, responseHeaders, httpStatus);
     }
 
     public boolean commentValidator(CommentDTO commentDTO) throws Exception {
 
-        String schema = new String(Files.readAllBytes(Paths.get("src/main/resources/comment-schema.json")));
+        String schema = new String(Files.readAllBytes(Paths.get("comment-schema.json")));
 
         ObjectMapper objectMapper = new ObjectMapper();
         String instance = objectMapper.writeValueAsString(commentDTO);
