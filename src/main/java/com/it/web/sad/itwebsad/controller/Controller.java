@@ -69,8 +69,7 @@ public class Controller {
         commentService.updateComment(id, commentDTO);
         if(commentValidator(commentService.getCommentById(id))){
             return ResponseEntity.accepted().build();
-        }
-        return ResponseEntity.noContent().build();
+        } else return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/comment/{commentId}")
@@ -78,12 +77,10 @@ public class Controller {
             @ApiResponse(responseCode = "201", description = "accepted"),
             @ApiResponse(responseCode = "204", description = "No Content")})
     public ResponseEntity<CommentDTO> delete(@PathVariable("commentId") String id) throws Exception {
-
         if(commentValidator(commentService.getCommentById(id))){
             commentService.deleteComment(id);
             return ResponseEntity.accepted().build();
-        }
-        return ResponseEntity.noContent().build();
+        } else return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/comments/{storyId}")
@@ -91,7 +88,6 @@ public class Controller {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "204", description = "No Content")})
     public List<CommentDTO> getCommentsByStoryId(@PathVariable String storyId) throws Exception {
-
         return commentService.getCommentsByStoryId(storyId);
     }
 
