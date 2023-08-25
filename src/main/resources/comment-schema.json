@@ -34,12 +34,6 @@
         },
         "name": {
           "type": "string"
-        },
-        "ip": {
-          "type": "string"
-        },
-        "agent": {
-          "type": "string"
         }
       },
       "required": [

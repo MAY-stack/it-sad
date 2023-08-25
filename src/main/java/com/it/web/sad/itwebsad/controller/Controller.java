@@ -22,6 +22,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,16 @@ public class Controller {
     @Operation(summary = "get all comments ", responses = {
             @ApiResponse(responseCode = "200", description = "OK")})
     public List<CommentDTO> getComments() throws Exception{
-        return commentService.getComments();
+        List<CommentDTO> comments = commentService.getComments();
+        List<CommentDTO> validComments = new ArrayList<>();
+
+        for(CommentDTO comment : comments){
+            if(commentValidator(comment)){
+                validComments.add(comment);
+            }
+        }
+
+        return validComments;
     }
 
     @PostMapping("/comments")
@@ -57,9 +67,12 @@ public class Controller {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "204", description = "no Content")})
     public ResponseEntity<CommentDTO> getCommentById(@PathVariable("commentId") String id) throws Exception {
-        if(commentValidator(commentService.getCommentById(id))){
-            return ResponseEntity.ok(commentService.getCommentById(id));
-        } else return ResponseEntity.noContent().build();
+        CommentDTO retrievedComment = commentService.getCommentById(id);
+        if (retrievedComment != null && commentValidator(retrievedComment)) {
+            return ResponseEntity.ok(retrievedComment);
+        } else {
+            return ResponseEntity.noContent().build();
+        }
     }
 
     @PutMapping("/comment/{commentId}")
@@ -71,7 +84,9 @@ public class Controller {
         commentService.updateComment(id, commentDTO);
         if(commentValidator(commentService.getCommentById(id))){
             return ResponseEntity.accepted().build();
-        } else return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.noContent().build();
+        }
     }
 
     @DeleteMapping("/comment/{commentId}")
@@ -90,17 +105,26 @@ public class Controller {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "204", description = "no Content")})
     public List<CommentDTO> getCommentsByStoryId(@PathVariable String storyId) throws Exception {
-        return commentService.getCommentsByStoryId(storyId);
+        List<CommentDTO> comments = commentService.getCommentsByStoryId(storyId);
+        List<CommentDTO> validComments = new ArrayList<>();
+
+        for(CommentDTO comment : comments){
+            if(commentValidator(comment)){
+                validComments.add(comment);
+            }
+        }
+
+        return validComments;
     }
 
     @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<Map<String,String>> ExceptionHandler(Exception e) {
+    public ResponseEntity<Map<String, String>> exceptionHandler(Exception e) {
         HttpHeaders responseHeaders = new HttpHeaders();
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
 
-        Map<String,String> map = new HashMap<>();
-        map.put("error type", httpStatus.getReasonPhrase());
-        map.put("code", httpStatus.name());
+        Map<String, String> map = new HashMap<>();
+        map.put("error type", e.getClass().getSimpleName());
+        map.put("error code", String.valueOf(httpStatus.value()));
 
         return new ResponseEntity<>(map, responseHeaders, httpStatus);
     }
