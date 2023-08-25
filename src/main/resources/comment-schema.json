@@ -1,0 +1,60 @@
+{
+  "title": "Generated schema for Root",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "storyId": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "image": {
+      "type": "string"
+    },
+    "isSend": {
+      "type": "string"
+    },
+    "time": {
+      "type": "string"
+    },
+    "user": {
+      "type": "object",
+      "properties": {
+        "uuid": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "ip": {
+          "type": "string"
+        },
+        "agent": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "uuid",
+        "name"
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "storyId",
+    "type",
+    "version",
+    "message",
+    "time",
+    "user"
+  ]
+}
