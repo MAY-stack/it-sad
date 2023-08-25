@@ -6,7 +6,7 @@ on:
 
 env:
   AWS_REGION: ap-northeast-1
-  ECR_REPOSITORY: it-web-sad
+  ECR_REPOSITORY: it-sad
 
 jobs:
   deploy:
