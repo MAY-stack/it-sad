@@ -11,15 +11,17 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,9 +105,10 @@ public class Controller {
         return new ResponseEntity<>(map, responseHeaders, httpStatus);
     }
 
-    public boolean commentValidator(CommentDTO commentDTO) throws Exception {
-
-        String schema = new String(Files.readAllBytes(Paths.get("comment-schema.json")));
+    public boolean commentValidator(CommentDTO commentDTO) throws IOException {
+        // Load the comment-schema.json resource from the classpath
+        ClassPathResource schemaResource = new ClassPathResource("comment-schema.json");
+        String schema = StreamUtils.copyToString(schemaResource.getInputStream(), StandardCharsets.UTF_8);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String instance = objectMapper.writeValueAsString(commentDTO);
