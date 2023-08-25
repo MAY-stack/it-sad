@@ -62,9 +62,9 @@ public class Controller {
 
     @PutMapping("/comment/{commentId}")
     @Operation(summary = "update comment by comment Id", responses = {
-            @ApiResponse(responseCode = "201", description = "accepted"),
+            @ApiResponse(responseCode = "202", description = "accepted"),
             @ApiResponse(responseCode = "204", description = "No Content"),
-            @ApiResponse(responseCode = "400", description = "Bad Request")})
+            @ApiResponse(responseCode = "400", description = "bad request")})
     public ResponseEntity<CommentDTO> updateComment(@PathVariable("commentId") String id, @Valid @RequestBody CommentDTO commentDTO) throws Exception {
         commentService.updateComment(id, commentDTO);
         if(commentValidator(commentService.getCommentById(id))){
@@ -98,7 +98,7 @@ public class Controller {
 
         Map<String,String> map = new HashMap<>();
         map.put("error type", httpStatus.getReasonPhrase());
-        map.put("code", "400");
+        map.put("code", "409");
 
         return new ResponseEntity<>(map, responseHeaders, httpStatus);
     }
