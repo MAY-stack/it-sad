@@ -22,6 +22,15 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      ## create application.yml
+      - name: make application.yml
+        if: contains(github.ref, 'main')
+        run: |
+          cd ./src/main/resources
+          touch ./application.yml
+          echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
+        shell: bash
+
       - name: Run chmod to make gradlew executable
         run: chmod +x ./gradlew
 
