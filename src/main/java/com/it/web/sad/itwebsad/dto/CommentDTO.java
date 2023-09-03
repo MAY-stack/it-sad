@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -47,6 +49,8 @@ public class CommentDTO {
     @NotBlank
     private String time;
 
+    private List<String> news;
+
     @NotNull
     private UserEntity user;
 
@@ -59,6 +63,7 @@ public class CommentDTO {
         this.image = commentEntity.getImage();
         this.isSend = commentEntity.getIsSend();
         this.time = commentEntity.getTime();
+        this.news = commentEntity.getNews();
         this.user = commentEntity.getUser();
     }
 
@@ -72,6 +77,7 @@ public class CommentDTO {
                 .image(commentDTO.getImage())
                 .isSend(commentDTO.getIsSend())
                 .time(commentDTO.getTime())
+                .news(commentDTO.getNews())
                 .user(commentDTO.getUser())
                 .build();
     }

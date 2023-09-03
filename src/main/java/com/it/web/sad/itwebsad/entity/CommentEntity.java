@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -20,6 +22,7 @@ public class CommentEntity {
     private String image;
     private String isSend;
     private String time;
+    private List<String> news;
     private UserEntity user;
 
 }

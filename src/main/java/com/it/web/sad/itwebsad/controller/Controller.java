@@ -22,10 +22,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 public class Controller {
@@ -52,14 +49,16 @@ public class Controller {
     @PostMapping("/comments")
     @Operation(summary = "add comment ", responses = {
             @ApiResponse(responseCode = "201", description = "created"),
-            @ApiResponse(responseCode = "400", description = "bad Request")})
+            @ApiResponse(responseCode = "409", description = "id already exist")})
     public ResponseEntity<CommentDTO> postComment(@Valid @RequestBody CommentDTO commentDTO) throws Exception {
-        CommentDTO savedComment = commentService.addComment(commentDTO);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                        .path("/{id}")
-                                .buildAndExpand(savedComment.getId())
-                                        .toUri();
-        return ResponseEntity.created(location).build();
+        if(commentService.checkCommentId(commentDTO.getId()).isEmpty()) {
+            CommentDTO savedComment = commentService.addComment(commentDTO);
+            URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(savedComment.getId())
+                    .toUri();
+            return ResponseEntity.created(location).build();
+        } else return ResponseEntity.status(409).build();
     }
 
     @GetMapping("/comment/{commentId}")

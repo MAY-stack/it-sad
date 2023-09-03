@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @Service
@@ -20,7 +21,7 @@ public class CommentServiceImpl implements CommentService {
         this.commentRepository = commentRepository;
     }
 
-    /* all */
+    /* get all comments */
     @Override
     public List<CommentDTO> getComments() {
         List<CommentEntity> EntityList = commentRepository.findAll();
@@ -41,7 +42,7 @@ public class CommentServiceImpl implements CommentService {
         return commentDTO;
     }
 
-    /* get by id */
+    /* get by comment id */
     @Override
     public CommentDTO getCommentById(String id){
 
@@ -52,6 +53,11 @@ public class CommentServiceImpl implements CommentService {
             return commentEntityToDTO(targetEntity);
 
         } else return commentEntityToDTO(targetEntity);
+    }
+
+    /*ID duplicate check*/
+    public Optional<CommentEntity> checkCommentId(String id){
+        return commentRepository.findById(id);
     }
 
     /* update */
