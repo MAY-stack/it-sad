@@ -7,11 +7,9 @@ import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.it.web.sad.itwebsad.dto.CommentDTO;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.InputStreamReader;
 import java.util.stream.Collectors;
 
 public class JsonSchemaValidator {
@@ -35,14 +33,14 @@ public class JsonSchemaValidator {
         return null;
     }
 
-    private String getJsonSchemaFromFile() {
-        try {
-            Path path = Paths.get(ClassLoader.getSystemResource("comment-schema.json").toURI());
-            return Files.readAllLines(path).stream().collect(Collectors.joining());
-        } catch (IOException | URISyntaxException e) {
-            //
+    public String getJsonSchemaFromFile() {
+        try (InputStreamReader inputStreamReader = new InputStreamReader(getClass().getResourceAsStream("/comment-schema.json"));
+             BufferedReader reader = new BufferedReader(inputStreamReader)) {
+            return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+        } catch (IOException e) {
+            e.printStackTrace(); // 예외 처리를 적절하게 수정하세요.
+            return "";
         }
-        return "";
     }
 
     public boolean validate(CommentDTO commentDTO) {
