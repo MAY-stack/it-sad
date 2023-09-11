@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 @Service
@@ -45,43 +44,27 @@ public class CommentServiceImpl implements CommentService {
     /* get by comment id */
     @Override
     public CommentDTO getCommentById(String id){
-
-        CommentEntity targetEntity = new CommentEntity();
-
-        if(commentRepository.findById(id).isPresent()) {
-            targetEntity = commentRepository.findById(id).get();
-            return commentEntityToDTO(targetEntity);
-
-        } else return commentEntityToDTO(targetEntity);
-    }
-
-    /*ID duplicate check*/
-    public Optional<CommentEntity> checkCommentId(String id){
-        return commentRepository.findById(id);
+        return commentEntityToDTO(commentRepository.findById(id).get());
     }
 
     /* update */
     @Override
-    public void updateComment(String id, CommentDTO commentDTO) {
-        if(commentRepository.findById(id).isPresent()){
-            CommentEntity targetEntity = commentRepository.findById(id).get();
+    public CommentDTO updateComment(String id, CommentDTO commentDTO) {
+        CommentEntity targetEntity = commentRepository.findById(id).get();
             targetEntity.setMessage(commentDTO.getMessage());
             targetEntity.setImage(commentDTO.getImage());
             targetEntity.setType(commentDTO.getType());
             targetEntity.setTime(commentDTO.getTime());
             targetEntity.setUser(commentDTO.getUser());
             targetEntity.setIsSend(commentDTO.getIsSend());
-           commentRepository.save(targetEntity);
-        }
+        commentRepository.save(targetEntity);
+        return commentEntityToDTO(targetEntity);
     }
 
     /* delete */
     @Override
     public void deleteComment(String id) {
-        if(commentRepository.findById(id).isPresent()){
-            CommentEntity targetEntity = commentRepository.findById(id).get();
-            commentRepository.delete(targetEntity);
-        }
+        commentRepository.delete(commentRepository.findById(id).get());
     }
 
     /* get by storyId */
@@ -106,6 +89,7 @@ public class CommentServiceImpl implements CommentService {
                 .image(commentEntity.getImage())
                 .isSend(commentEntity.getIsSend())
                 .time(commentEntity.getTime())
+                .news(commentEntity.getNews())
                 .user(commentEntity.getUser())
                 .build();
     }

@@ -22,4 +22,5 @@ public class MongoConfiguration {
         converter.setTypeMapper(new DefaultMongoTypeMapper(null));      //데이터 저장 시 _class field 사용X
         return converter;
     }
+
 }

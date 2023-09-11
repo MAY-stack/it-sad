@@ -1,5 +1,4 @@
 {
-  "title": "Generated schema for Root",
   "type": "object",
   "properties": {
     "id": {
@@ -29,7 +28,7 @@
     "news": {
       "type": "array",
       "items": {
-        "type": "String"
+        "type": "string"
       }
     },
     "user": {
@@ -41,6 +40,12 @@
         "name": {
           "type": "string"
         }
+      },
+      "ip": {
+        "type": "string"
+      },
+      "agent": {
+        "type": "string"
       },
       "required": [
         "uuid",

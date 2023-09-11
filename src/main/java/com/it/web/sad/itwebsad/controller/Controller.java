@@ -1,33 +1,30 @@
 package com.it.web.sad.itwebsad.controller;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.it.web.sad.itwebsad.dto.CommentDTO;
 import com.it.web.sad.itwebsad.service.CommentService;
-import dev.harrel.jsonschema.ValidatorFactory;
+import com.it.web.sad.itwebsad.util.JsonSchemaValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @RestController
 public class Controller {
     @Autowired
     private CommentService commentService;
+    private final JsonSchemaValidator jsonSchemaValidator = new JsonSchemaValidator();
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @GetMapping("/comments")
@@ -36,13 +33,11 @@ public class Controller {
     public List<CommentDTO> getComments() throws Exception{
         List<CommentDTO> comments = commentService.getComments();
         List<CommentDTO> validComments = new ArrayList<>();
-
         for(CommentDTO comment : comments){
             if(commentValidator(comment)){
                 validComments.add(comment);
             }
         }
-
         return validComments;
     }
 
@@ -50,21 +45,19 @@ public class Controller {
     @Operation(summary = "add comment ", responses = {
             @ApiResponse(responseCode = "201", description = "created"),
             @ApiResponse(responseCode = "409", description = "id already exist")})
-    public ResponseEntity<CommentDTO> postComment(@Valid @RequestBody CommentDTO commentDTO) throws Exception {
-        if(commentService.checkCommentId(commentDTO.getId()).isEmpty()) {
-            CommentDTO savedComment = commentService.addComment(commentDTO);
-            URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                    .path("/{id}")
-                    .buildAndExpand(savedComment.getId())
-                    .toUri();
-            return ResponseEntity.created(location).build();
-        } else return ResponseEntity.status(409).build();
+    public ResponseEntity<CommentDTO> postComment(@RequestBody CommentDTO commentDTO) throws Exception {
+        CommentDTO savedComment = commentService.addComment(commentDTO);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedComment.getId())
+                .toUri();
+        return ResponseEntity.created(location).build();
     }
 
     @GetMapping("/comment/{commentId}")
     @Operation(summary = "get comment by comment Id", responses = {
             @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "204", description = "no Content")})
+            @ApiResponse(responseCode = "400", description = "NoSuchElementException")})
     public ResponseEntity<CommentDTO> getCommentById(@PathVariable("commentId") String id) throws Exception {
         CommentDTO retrievedComment = commentService.getCommentById(id);
         if (retrievedComment != null && commentValidator(retrievedComment)) {
@@ -74,29 +67,25 @@ public class Controller {
         }
     }
 
-    @PutMapping("/comment/{commentId}")
+    @PutMapping("/comment")
     @Operation(summary = "update comment by comment Id", responses = {
             @ApiResponse(responseCode = "202", description = "accepted"),
-            @ApiResponse(responseCode = "204", description = "no Content"),
-            @ApiResponse(responseCode = "400", description = "bad request")})
-    public ResponseEntity<CommentDTO> updateComment(@PathVariable("commentId") String id, @Valid @RequestBody CommentDTO commentDTO) throws Exception {
-        commentService.updateComment(id, commentDTO);
-        if(commentValidator(commentService.getCommentById(id))){
+            @ApiResponse(responseCode = "400", description = "NoSuchElementException"),
+            @ApiResponse(responseCode = "400", description = "Bad Request")})
+    public ResponseEntity<CommentDTO> updateComment(@Valid @RequestBody CommentDTO commentDTO) throws Exception {
+        if(commentValidator(commentService.updateComment(commentDTO.getId(), commentDTO))){
             return ResponseEntity.accepted().build();
         } else {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.badRequest().build();
         }
     }
 
     @DeleteMapping("/comment/{commentId}")
     @Operation(summary = "delete comment by comment Id", responses = {
-            @ApiResponse(responseCode = "201", description = "accepted"),
-            @ApiResponse(responseCode = "204", description = "no Content")})
+            @ApiResponse(responseCode = "201", description = "accepted")})
     public ResponseEntity<CommentDTO> delete(@PathVariable("commentId") String id) throws Exception {
-        if(commentValidator(commentService.getCommentById(id))){
-            commentService.deleteComment(id);
-            return ResponseEntity.accepted().build();
-        } else return ResponseEntity.noContent().build();
+        commentService.deleteComment(id);
+        return ResponseEntity.accepted().build();
     }
 
     @GetMapping("/comments/{storyId}")
@@ -129,15 +118,6 @@ public class Controller {
     }
 
     public boolean commentValidator(CommentDTO commentDTO) throws IOException {
-        // Load the comment-schema.json resource from the classpath
-        ClassPathResource schemaResource = new ClassPathResource("comment-schema.json");
-        String schema = StreamUtils.copyToString(schemaResource.getInputStream(), StandardCharsets.UTF_8);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        String instance = objectMapper.writeValueAsString(commentDTO);
-
-        boolean valid = new ValidatorFactory().validate(schema, instance).isValid();
-        logger.info(String.valueOf(valid));
-        return valid;
+        return jsonSchemaValidator.validate(commentDTO);
     }
 }

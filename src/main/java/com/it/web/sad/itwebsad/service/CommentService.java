@@ -4,7 +4,6 @@ import com.it.web.sad.itwebsad.dto.CommentDTO;
 import com.it.web.sad.itwebsad.entity.CommentEntity;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface CommentService {
 
@@ -17,11 +16,8 @@ public interface CommentService {
     /* get by id */
     public CommentDTO getCommentById(String id);
 
-    /*ID duplicate check*/
-    public Optional<CommentEntity> checkCommentId(String id);
-
     /* update */
-    public void updateComment(String id, CommentDTO commentDTO);
+    public CommentDTO updateComment(String id, CommentDTO commentDTO) throws Exception;
 
     /* delete */
     public void deleteComment(String id);
