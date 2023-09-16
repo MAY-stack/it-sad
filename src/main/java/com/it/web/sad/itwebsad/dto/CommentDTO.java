@@ -2,6 +2,9 @@ package com.it.web.sad.itwebsad.dto;
 
 import com.it.web.sad.itwebsad.entity.CommentEntity;
 import com.it.web.sad.itwebsad.entity.UserEntity;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.List;
@@ -14,14 +17,41 @@ import java.util.List;
 public class CommentDTO {
 
     private String id;
+
+    @NotNull
+    @NotEmpty
+    @NotBlank
     private String storyId;
+
+    @NotNull
+    @NotEmpty
+    @NotBlank
     private String type;
+
+    @NotNull
+    @NotEmpty
+    @NotBlank
     private String version;
+
+    @NotNull
+    @NotEmpty
+    @NotBlank
     private String message;
+
     private String image;
+
     private String isSend;
+
+    @NotNull
+    @NotEmpty
+    @NotBlank
     private String time;
+
+    @NotNull
+    @NotEmpty
     private List<String> news;
+
+    @NotNull
     private UserEntity user;
 
 

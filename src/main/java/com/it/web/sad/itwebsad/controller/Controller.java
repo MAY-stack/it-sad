@@ -45,7 +45,7 @@ public class Controller {
     @Operation(summary = "add comment ", responses = {
             @ApiResponse(responseCode = "201", description = "created"),
             @ApiResponse(responseCode = "409", description = "id already exist")})
-    public ResponseEntity<CommentDTO> postComment(@RequestBody CommentDTO commentDTO) throws Exception {
+    public ResponseEntity<CommentDTO> postComment(@Valid @RequestBody CommentDTO commentDTO) throws Exception {
         CommentDTO savedComment = commentService.addComment(commentDTO);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
